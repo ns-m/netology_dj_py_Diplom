@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Graduation Work{% endblock %}
+{% block content %}
+<main role="main">
+
+  {% for article in articles %}
+    <div class="jumbotron">
+      <div class="container">
+        <h1 class="display-4">{{ article.name }}</h1>
+        <p>{{ article.text }}</p>
+        {% if not request.user.is_authenticated %}
+          Чтобы оставить или просмотреть отзывы о товаре нужно авторизоваться!
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="container mb-5">
+      <div class="row">
+
+        {% for product in article.products %}
+          <div class="col-md-4">
+            <h2>{{ product.name }}</h2>
+            {% if request.user.is_authenticated %}
+              <img src="{% get_media_prefix %}{{product.image}}" width="180">
+              <a href="{{product.category}}/{{product.slug}}">
+                <input type="submit" class="btn btn-secondary" value="Информация и отзывы »">
+              </a>
+            {% else %}
+              <img src="{% get_media_prefix %}{{product.image}}" width="180">
+            {% endif %}
+            <br><br>
+            <form action="/add_to_cart/{{ product.id }}">
+              <input type="submit" class="btn btn-secondary" value="Добавить в корзину »">
+            </form>
+          </div>
+        {% endfor %}
+
+      </div>
+    </div>
+  {% endfor %}
+
+</main>
+{% endblock %}

@@ -1,0 +1,62 @@
+<!-- шаблон корзины, вставляется в `base.html` -->
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Graduation Work{% endblock %}
+{% block content %}
+<div class="container mt-3">
+  {% if request.user.is_authenticated %} <!-- если пользователь авторизован -->
+    {% if number_of_items > 0 %} <!-- если корзина не пустая -->
+      <div class="row">
+        <div class="col-lg-6 col-md-9 col-sm-12 order-md-2 mb-4">
+          <h4 class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Ваша корзина</span>
+            <span class="badge badge-secondary badge-pill">{{ number_of_items }}</span> <!-- кол-во товаров -->
+          </h4>
+          <ul class="list-group mb-3">
+            {% for item in items %} <!-- проходится по всем товаром -->
+              <li class="list-group-item d-flex justify-content-between lh-condensed">
+                <div>
+                  <h6 class="my-0">{{ item.product.name }}</h6> <!-- название товара -->
+                  <small class="text-muted">{{ item.product.description }}</small> <!-- описание товара -->
+                </div>
+                <div class="text-right">
+                  <small class="text-muted">{{ item.product.price }} руб.</small> &#735; <span class="font-weight-bold">{{ item.amount }}</span><br> <!-- цена и кол-во товара -->
+                  <small>= {{ item.total }} руб.</small> <!-- общая стоимость товара (колво*цена)-->
+                </div>
+              </li>
+            {% endfor %}
+
+          </ul>
+          <h4 class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Итого:</span>
+            <span class="text-primary font-weight-bold">{{ total }} руб.</span> <!-- общая стоимость всех товаров-->
+          </h4>
+
+          <form class="card p-2" action="" method="POST">
+            {% csrf_token %} <!-- обязательный токен -->
+            <input type="text" name="order_id" value="{{ order_id }}" hidden>
+            <button type="submit" class="btn btn-secondary">Заказать</button>
+          </form>
+        </div>
+      </div>
+    {% else %} <!-- если корзина пустая -->
+      {% if msg %} <!-- если msg = True -->
+        <div class="alert alert-dark" role="alert">
+          {{ msg }} <!-- вывести msg -->
+        </div>
+      {% else %} <!-- если msg = False -->
+        <div class="alert alert-dark" role="alert">
+          Корзина пуста!
+        </div>
+      {% endif %}
+    {% endif %}
+  {% else %} <!-- если пользователь не авторизован -->
+    <div class="alert alert-dark" role="alert">
+      <p>Чтобы добавить товар в корзину необходимо <a href="/login/">авторизоваться</a>!</p> <!-- переводит на страницу авторизации, login из urls.py-->
+      <p>Если Вы еще не зарегистрированы, то <a href="/signup/">зарегистрируйтесь</a>!</p> <!-- переводит на страницу регистрации, signup из urls.py-->
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
